@@ -30,6 +30,20 @@ sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
 ## Step 3: Enable IPv4 Packet Forwarding
 Kubernetes uses container networking to allow pods to communicate across nodes. Packet forwarding must be enabled to route traffic between pods, especially in a multi-node setup. CNI plugins like Calico depend on this setting.
+
+#### sysctl params required by setup, params persist across reboots
+```bash
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.ipv4.ip_forward = 1
+EOF
+```
+
+#### Apply sysctl params without reboot
+```bash
+sudo sysctl --system
+```
+
+###  Verify IPv4 Packet Forwarding
 ```bash
 sysctl net.ipv4.ip_forward
 ```
