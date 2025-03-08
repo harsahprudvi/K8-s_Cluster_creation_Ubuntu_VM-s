@@ -335,11 +335,11 @@ sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 ```
 ### Step 10: Initialize the Cluster and Install CNI
+## This Needs to be ran only on master server
 ```bash
 sudo kubeadm config images pull
 sudo kubeadm init --pod-network-cidr=192.168.0.0/16
 ```
-#### After Initialzing the Cluster Connect to it and apply the CNI yaml (We're using Weave CNI in this guide)
 
 ```bash
 #To start using your cluster, you need to run the following as a regular user:
@@ -359,6 +359,7 @@ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
 ## Step 11: Join Worker Nodes to the Cluster
 Run the join command generated after `kubeadm init` on each worker node:
+below is just the example the real command will be visible on your screen once you ran the kubeadm init .
 ```bash
 kubeadm join <MASTER-IP>:6443 --token <TOKEN> \
     --discovery-token-ca-cert-hash sha256:<HASH>
@@ -373,6 +374,11 @@ Check if all the pods are running:
 ```bash
 kubectl get pods -n kube-system
 ```
+if you cleared your screen or lost the join command use below commad to  print it again: 
+```bash
+kubeadm token create --print-join-command
+```
+
 ## If you are facing any issues and want to delete and recreate the cluster please follow th below steps: 
 
 ## How to Delete the Kubernetes Cluster
