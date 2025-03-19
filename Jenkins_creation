@@ -1,0 +1,63 @@
+Jenkins creation 
+
+
+If your terminal is prometing all the path of the folders update the PS1 value in the ~/.bashrc file to update it to only current directory.
+ vi ~/.bashrc
+source ~/.bashrc
+
+Connect the ec2 instance   
+ssh -i "mykey_feb14.pem" ubuntu@ec2-13-126-14-66.ap-south-1.compute.amazonaws.com
+
+You need to be in the folder where the access key is downloded to use the above command else you can just provide the path to it
+
+update the instance packages 
+sudo apt update
+
+install JDK
+sudo apt install default-jdk -y
+
+Adding Repository  and jenkins installation - 
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins
+
+if you are facing issue you need to verify what jdk you are using and if needed you can change the jdk by using below command 
+java --version 
+
+if its below jdk 11 change it by below command 
+sudo update-alternatives --config java
+
+-----------------------------------------------------------------------------------------------------------
+There are multiple groups available you can list them using 
+cat /etc/group
+
+if you want to create a user provide system access to the user you can add the user to the particular group 
+
+Here EC2 is a ubuntu user and can't perform jenkins system restart as it is not having root permission or system permissions here system means jenkins 
+Add the ubuntu user to jenkins groups to have admin access to only jenkins system
+
+Create a New User
+sudo useradd -m -s /bin/bash <username>
+-m → Creates a home directory (/home/<username>)
+-s /bin/bash → Sets the default shell to Bash
+
+Set a password for the user:
+sudo passwd <username>
+
+Check if the group exists:
+getent group <groupname>
+
+If it does not exist, create it:
+sudo groupadd <groupname>
+
+
+
+
+
+
+
+
