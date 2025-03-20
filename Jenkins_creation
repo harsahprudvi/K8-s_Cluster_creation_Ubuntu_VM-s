@@ -1,4 +1,5 @@
-Jenkins creation 
+Jenkins creation took reference from - https://www.coachdevops.com/search?q=jenkins+on+server
+
 
 
 If your terminal is prometing all the path of the folders update the PS1 value in the ~/.bashrc file to update it to only current directory.
@@ -53,6 +54,34 @@ getent group <groupname>
 
 If it does not exist, create it:
 sudo groupadd <groupname>
+
+Add the User to the Group
+sudo usermod -aG <groupname> <username>
+
+Verify the User’s Group Membership
+groups <username>
+
+if the jenkins UI is not acccessible make sure the http port is stated in the jenkins file 
+sudo vi /etc/default/jenkins
+
+Add the below content and restart the jenkins server
+HTTP_PORT=8080
+JENKINS_ARGS="--httpListenAddress=0.0.0.0"
+
+
+-------------------------------------------------------------------------------------
+There are 2 servers a,b is run ssh-keygen it creates public and private keys in the ~/.ssh location 
+id_ed25519  id_ed25519.pub 
+
+now we need to copy the pub file and copy that in the sudo -u jenkins vi /home/jenkins/.ssh/authorized_keys file in the b server here we create jenkins server before hand.
+now if we try ssh from a to be using ssh jenkins@slave_node_ip which is server b a new file know_host is created in ~/.ssh location this contains the host-key os b which helps in identifying the server b in future conections and avoid man in the middle attack.
+Man in middle attack is if you are looking to ssh from a to b a imposter interfers and acts as b and gathers all the inforamtion to avoid it it validates the host key of b in the know host file.
+
+Host keys are different from user keys ie user keys are priavte/public keys created by ssh-keygen which are used for password less authentication and file transfer and host keys are used to uniquely identify the server.
+
+-----------------------------------------------------------------------------------------------
+
+
 
 
 
