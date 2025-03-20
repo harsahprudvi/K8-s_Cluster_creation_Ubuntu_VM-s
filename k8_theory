@@ -1,0 +1,226 @@
+Core Kubernetes Components Explained
+Kubernetes consists of several components that work together to manage containerized applications. Below is a breakdown of the key components:
+
+1. Master Node Components (Control Plane)
+These components manage and control the Kubernetes cluster.
+
+📌 Kube API Server (kube-apiserver)
+The central control unit of Kubernetes, acting as the gateway for all operations.
+Exposes the Kubernetes API (kubectl, client requests, etc.).
+Validates and processes all API requests (e.g., deploying a pod, scaling services).
+Stores cluster state in etcd.
+📌 etcd
+A distributed key-value store that holds the entire Kubernetes cluster state.
+Stores configurations, pod status, service discovery, and leader election data.
+Highly available and replicated across multiple nodes.
+📌 Kube Controller Manager (kube-controller-manager)
+A collection of controllers that ensure desired state == actual state.
+Includes:
+Node Controller – Manages node failures.
+Replication Controller – Ensures correct pod count.
+Endpoints Controller – Manages service discovery.
+📌 Kube Scheduler (kube-scheduler)
+Assigns pods to nodes based on resource availability (CPU, memory, taints/tolerations).
+Uses algorithms to decide the best fit for workloads.
+2. Worker Node Components (Data Plane)
+These components run the actual workloads.
+
+📌 Kubelet
+An agent on every worker node that communicates with the API Server.
+Ensures containers are running inside pods.
+Manages container lifecycle and health checks.
+📌 Kube Proxy (kube-proxy)
+Handles networking and routing inside the cluster.
+Manages iptables/IPVS rules to enable service discovery and load balancing.
+Ensures traffic reaches the correct pod.
+📌 Container Runtime (e.g., containerd, CRI-O, Docker)
+The underlying container runtime responsible for running containers.
+Kubernetes does NOT run containers directly but delegates it to a runtime like:
+containerd (default for Kubernetes)
+CRI-O
+Docker (deprecated in Kubernetes 1.24+)
+3. Additional Kubernetes Components
+📌 Ingress Controller (ingress)
+Manages external access to services inside the cluster (HTTP/HTTPS traffic).
+Acts as a reverse proxy (e.g., Nginx Ingress, Traefik, HAProxy).
+Allows routing rules based on paths or hostnames.
+📌 CoreDNS
+Default DNS provider in Kubernetes.
+Resolves internal cluster services (e.g., my-service.default.svc.cluster.local).
+📌 CNI (Container Network Interface)
+Provides networking between pods (e.g., Calico, Flannel, Cilium).
+Ensures pods can communicate across different nodes.
+Summary Table
+Component	Role
+kube-apiserver	Handles all API requests & cluster state updates
+etcd	Stores cluster state data persistently
+kube-controller-manager	Runs controllers to maintain cluster state
+kube-scheduler	Assigns pods to nodes based on resources
+kubelet	Runs on worker nodes, ensures containers are running
+kube-proxy	Manages networking, routes traffic to services
+containerd	Container runtime that runs workloads
+Ingress Controller	Manages external access to services
+CoreDNS	Provides internal DNS resolution
+CNI Plugin	Manages pod-to-pod networking
+🚀 Final Thought:
+Kubernetes Control Plane (Master Node) manages the cluster, while Worker Nodes run the workloads. Components like kube-apiserver, etcd, and kubelet ensure smooth operation, while ingress and CNI enhance networking. Let me know if you need more details!
+\
+
+
+-----------------------------------------------------------------------------
+
+1. Image Pull Errors
+Issue: The pod cannot pull the container image.
+Causes:
+Wrong image name or tag.
+Image not available in the specified registry.
+Authentication issues (private registry).
+Troubleshooting:
+
+kubectl describe pod <pod-name>
+Check for ErrImagePull or ImagePullBackOff errors.
+Ensure the image exists in the registry.
+If using a private registry, verify the image pull secret.
+
+2. CrashLoopBackOff
+Issue: The pod starts, crashes, and Kubernetes keeps restarting it.
+Causes:
+Application misconfiguration (e.g., missing environment variables).
+The main process inside the container exits unexpectedly.
+Insufficient memory/CPU.
+Troubleshooting:
+
+kubectl logs <pod-name> -c <container-name>
+Check logs for errors.
+Increase CPU/memory limits if resource exhaustion is suspected.
+Verify application dependencies (e.g., DB connectivity).
+
+3. OOMKilled (Out of Memory)
+Issue: The pod is killed due to exceeding memory limits.
+Causes:
+Memory leak in the application.
+Improper memory requests/limits in the pod spec.
+Troubleshooting:
+
+kubectl describe pod <pod-name> | grep -i oom
+Increase resources.limits.memory in the pod spec.
+Optimize application memory usage.
+
+4. Node Pressure (Evicted Pods)
+Issue: The pod is evicted due to node resource pressure.
+Causes:
+Node is running out of memory (Evicted status).
+Disk pressure or CPU starvation.
+Troubleshooting:
+
+kubectl get events --sort-by=.metadata.creationTimestamp
+Check if the node is under pressure.
+Consider moving the pod to another node with more resources.
+
+5. Readiness Probe/Liveness Probe Failures
+Issue: The pod is marked as unhealthy and restarted.
+Causes:
+The application takes too long to start (readiness probe fails).
+The application becomes unresponsive (liveness probe fails).
+Troubleshooting:
+
+kubectl describe pod <pod-name>
+Increase initialDelaySeconds for slow-starting apps.
+Check endpoint responses if HTTP probes are failing.
+
+6. Node Failure or Network Issues
+Issue: The pod cannot communicate with other services or is stuck in ContainerCreating.
+Causes:
+Node is down or unreachable.
+Network policies block pod communication.
+Troubleshooting:
+
+kubectl get nodes
+kubectl describe pod <pod-name>
+If the node is NotReady, check node logs.
+Check kubectl get networkpolicy for blocking rules.
+
+7. File System or Volume Mount Errors
+Issue: The pod crashes due to missing or corrupted volumes.
+Causes:
+Persistent Volume (PV) not attached or misconfigured.
+Insufficient permissions on mounted directories.
+Troubleshooting:
+
+kubectl describe pod <pod-name>
+Check if the volume is correctly mounted.
+Verify the storage class and PersistentVolumeClaims (PVC).
+
+8. Insufficient Privileges
+Issue: The application fails due to permission issues.
+Causes:
+The container runs as a non-root user and lacks necessary permissions.
+Security policies prevent execution.
+Troubleshooting:
+
+kubectl logs <pod-name>
+Adjust security context (runAsUser, runAsGroup).
+Ensure correct ServiceAccount permissions.
+
+
+Summary of Common Pod Crash Issues
+Issue	Error Message / Status	Fix
+Image Pull Issues	ErrImagePull, ImagePullBackOff	Verify image name, tag, and credentials
+CrashLoopBackOff	CrashLoopBackOff	Check logs, fix application errors
+Out of Memory	OOMKilled	Increase memory limits, optimize app usage
+Node Pressure	Evicted	Scale cluster, free up resources
+Probe Failures	Readiness probe failed	Adjust probe settings, check service status
+Node Down	Node NotReady	Check node health, move pod to another node
+Volume Issues	MountVolume.SetUp failed	Fix volume mounts, check PVC claims
+Security Issues	Permission denied	Adjust security context and permissions
+Would you like help debugging a specific pod crash issue in your cluster? 🚀
+
+-----------------------------------------------------------------------------
+
+Assigning the pod to k8 cluster - 
+
+1. Nodeselectors - define in the spec part only support  exact match 
+spec:
+  nodeSelector:
+    environment: production  # Must match the node label
+  containers:
+    - name: my-container
+      image: nginx
+
+2.Nodeaffinity - provides flexibility using condition based node allocation using phrase like In, NotIn, Exists
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: environment
+                operator: In
+                values:
+                  - production
+3.Nodename directly 
+spec:
+  nodeName: node-1  # Hard binding
+
+4.taints and tolerations 
+
+Nodes will be tainted with key value and pods are scheduled on to the nodes only if they have relative toleration defined on it else they are repelled.
+
+5. Apply custome scheduler
+
+so why we have nodeaffinity and taints and tolerations seperately as they serve same purpose 
+
+Nodeaffinity schedules pods on the nodes having same label if pods are gpu sensitive and used node affinity pods are scheduled only is gpu labels nodes are present.
+But if you use taints and toleration let say sec pods to be deployed on sec nodeds only it will check for sec nodes and sec nodes only allow sec pods but if sec nodes are not available it can be scheduled in ther nodes as well.
+
+Node affinity 
+kubectl label node gpu-node gpu=tru 
+
+--------------------------------------------------------------
+
+Users and Groups authenticate humans (via IAM, LDAP, etc.). so we create role and add the role to the user /group using role binding if it is with in one namespace ..... if cluster level a cluster roles is created and cluster role binding is done 
+Service Accounts authenticate workloads running inside Kubernetes....... But if the scenario where weh ave a cicd pipeline running on the container of a pod and want to make a deployement inside the k8 cluster it already in with out service account. it is not possible that's why we need service account 
+
+---------------------------------------------------------------------
+
+
