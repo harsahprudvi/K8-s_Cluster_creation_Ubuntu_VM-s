@@ -1,0 +1,65 @@
+Linux 
+
+1️⃣ grep (Global Regular Expression Print)
+✅ Purpose:
+grep is used to search for patterns in files or command outputs and print matching lines.
+
+🔹 Basic Syntax:
+bash
+Copy
+Edit
+grep [OPTIONS] "pattern" filename
+📌 Common grep Examples:
+🔹 Find a word in a file:
+
+bash
+Copy
+Edit
+grep "error" /var/log/syslog
+🔹 Search case-insensitive (-i):
+
+bash
+Copy
+Edit
+grep -i "error" logfile.txt
+🔹 Search recursively (-r):
+
+bash
+Copy
+Edit
+grep -r "error" /var/log/
+🔹 Show line numbers (-n):
+
+bash
+Copy
+Edit
+grep -n "failed" auth.log
+🔹 Find only whole words (-w):
+
+bash
+Copy
+Edit
+grep -w "root" /etc/passwd
+🔹 Use Regular Expressions (-E):
+
+bash
+Copy
+Edit
+grep -E "error|failure|warning" logs.txt
+🔹 Invert match (-v - Show lines that do NOT contain the pattern):
+
+bash
+Copy
+Edit
+grep -v "success" server.log
+🔹 Find lines starting with a word (^ for start, $ for end):
+
+
+
+grep "^ERROR" logs.txt
+🔹 Count occurrences (-c):
+
+bash
+Copy
+Edit
+grep -c "error" syslog
