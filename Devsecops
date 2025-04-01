@@ -1,0 +1,9 @@
+Diff tools used to achive devsecops approach 
+
+Static Analysis with Semgrep
+Infrastructure as Code Security with Checkov
+Supply Chain Security with Sift & Grype
+Secrets Management with Gitleaks
+Dynamic Scanning with Zap & Nuclei
+Cloud Security Auditing with Steampipe
+
