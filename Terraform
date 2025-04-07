@@ -1,0 +1,34 @@
+provider "aws" {
+    region = "ap-south-1" 
+}
+
+variable "ec2_type" {
+    type = string
+    default = "t2.micro"
+    description = "this is the type of instance used "
+}
+
+variable "Ami_type" {
+    type = string
+    default = "ami-0e35ddab05955cf57"
+    description = "this is the type of instance used "
+}
+
+variable "Key_type" {
+    type = string
+    default = "mykey_feb14"
+    description = "this is the type of instance used "
+}
+
+resource "aws_instance" "ec2_insance" {
+    ami = var.Ami_type
+    instance_type = var.ec2_type
+    key_name = var.Key_type
+}
+
+
+Tfvars file 
+
+ec2_type = "t2.nano"   # you can directly use the variable name and = and value you want to send and save the file
+
+For exec - terraform apply -var-file dev.tfvars  # This will use the user defined tfvars files and override the default value..
