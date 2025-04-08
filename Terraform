@@ -32,3 +32,34 @@ Tfvars file
 ec2_type = "t2.nano"   # you can directly use the variable name and = and value you want to send and save the file
 
 For exec - terraform apply -var-file dev.tfvars  # This will use the user defined tfvars files and override the default value..
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Vpc,subnet,internet gateway,nategateway,route table,ec2,security group,Alb,route53,
+
+Dependancy
+vpc - cidr_block   ex value - 11.0.0.0/16 
+subnet - vpc_id,cidr_block,availability_zone opt tags(same for public and private )
+security_group - name,vpc_id,ingress - (description,from_port,to_port,protocol)  egress -(description,from_port,to_port,protocol) tag (Name = "my_sg")
+
+internet gateway - vpc_id, tags
+aws elastic ip - vpc =true
+aws nategateway - elastic allocation id ,subnet_id ,tags
+aws route table public  - vpc_id ,route {cidr,gateway_id},tags 
+aws route table private - vpc_id ,route {cidr,natgateway_id},tags 
+
+aws route table association public - subnet_id,route_table_id
+aws route table association private - subnet_id,route_table_id
+
+
+
+
+
+
+
+
+
+
+
+
+
